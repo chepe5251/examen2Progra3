@@ -1,0 +1,21 @@
+# Archivos compilados de Java
+*.class
+
+# Archivos de datos generados en tiempo de ejecución
+usuarios.txt
+accesos.txt
+
+# Carpeta interna de Claude Code
+.claude/
+
+# Archivos de IDEs
+.idea/
+*.iml
+.vscode/
+*.nbproject
+nbproject/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -8,6 +8,29 @@ Todos los cambios relevantes de cada versión se documentan aquí, ordenados de 
 
 ---
 
+## [v2.1] — 2026-04-07 — Scripts de ejecución y documentación final
+
+### Descripción
+Se añadieron scripts `.bat` para Windows que permiten compilar y ejecutar el proyecto
+con un doble clic, sin necesidad de escribir comandos manualmente. Se creó `.gitignore`
+para excluir archivos compilados y datos generados en tiempo de ejecución. El README
+fue completamente reescrito con instrucciones claras para cualquier usuario nuevo.
+
+### Añadido
+- `run.bat` — ejecuta la interfaz gráfica JavaFX directamente
+- `run-consola.bat` — ejecuta el modo consola sin JavaFX
+- `compilar.bat` — recompila todas las clases del proyecto
+- `.gitignore` — excluye `.class`, `usuarios.txt`, `accesos.txt` y `.claude/`
+- `--enable-native-access=javafx.graphics` en el comando de ejecución para
+  eliminar advertencias de compatibilidad entre Java 24 y JavaFX 26
+
+### Modificado
+- `README.md` — reescrito con tabla de contenidos, instrucciones de instalación
+  para Windows/macOS/Linux, tabla de solución de problemas y documentación completa
+  de scripts
+
+---
+
 ## [v2.0] — 2026-04-07 — Interfaz gráfica con JavaFX
 
 ### Descripción
@@ -157,7 +180,8 @@ son POJOs puros: no contienen lógica de negocio ni acceso a persistencia.
 
 | Hash | Versión | Descripción |
 |------|---------|-------------|
-| pendiente | v2.0 | feat: interfaz gráfica JavaFX |
+| pendiente | v2.1 | docs: scripts de ejecución y documentación final |
+| `f7cafef` | v2.0 | feat: interfaz gráfica JavaFX |
 | `8611c5f` | docs | docs: agregar README, CHANGELOG y actualizar IA_USO |
 | `88018db` | v1.3 | fix: validación de doble entrada |
 | `31201d3` | v1.2 | feat: interfaz de usuario en consola |
