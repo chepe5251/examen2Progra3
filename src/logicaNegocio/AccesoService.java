@@ -51,7 +51,6 @@ public class AccesoService {
 
     public List<Acceso> historialPorUsuario(String idUsuario) throws IOException {
         validarIdNoVacio(idUsuario);
-        validarUsuarioExiste(idUsuario);
 
         return accesoData.listar().stream()
                 .filter(a -> a.getIdUsuario().equals(idUsuario))
@@ -84,7 +83,10 @@ public class AccesoService {
 
     private void validarIdNoVacio(String id) {
         if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("El ID de usuario no puede estar vacío.");
+            throw new IllegalArgumentException("El ID de usuario no puede estar vacio.");
+        }
+        if (id.contains(",")) {
+            throw new IllegalArgumentException("El ID de usuario no puede contener comas.");
         }
     }
 

@@ -1,5 +1,6 @@
 package logicaNegocio;
 
+import accesodatos.AccesoData;
 import accesodatos.UsuarioData;
 import entidades.Rol;
 import entidades.Usuario;
@@ -9,9 +10,11 @@ import java.util.List;
 
 public class UsuarioService {
 
+    private final AccesoData accesoData;
     private final UsuarioData usuarioData;
 
     public UsuarioService() {
+        this.accesoData = new AccesoData();
         this.usuarioData = new UsuarioData();
     }
 
@@ -30,11 +33,14 @@ public class UsuarioService {
     }
 
     public void eliminar(String id) throws IOException {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("El ID no puede estar vacío.");
-        }
+        validarId(id);
         if (!existeId(id)) {
             throw new IllegalArgumentException("No existe un usuario con el ID: " + id);
+        }
+        if (tieneAccesoActivo(id)) {
+            throw new IllegalStateException(
+                "No se puede eliminar el usuario " + id + " porque tiene una entrada activa registrada."
+            );
         }
         usuarioData.eliminar(id);
     }
@@ -45,14 +51,31 @@ public class UsuarioService {
     }
 
     private void validarCamposUsuario(String id, String nombre, Rol rol) {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("El ID no puede estar vacío.");
-        }
+        validarId(id);
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre no puede estar vacío.");
+            throw new IllegalArgumentException("El nombre no puede estar vacio.");
         }
+        validarSinComas(nombre, "El nombre");
         if (rol == null) {
             throw new IllegalArgumentException("El rol no puede ser nulo.");
         }
+    }
+
+    private void validarId(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("El ID no puede estar vacio.");
+        }
+        validarSinComas(id, "El ID");
+    }
+
+    private void validarSinComas(String valor, String campo) {
+        if (valor.contains(",")) {
+            throw new IllegalArgumentException(campo + " no puede contener comas.");
+        }
+    }
+
+    private boolean tieneAccesoActivo(String id) throws IOException {
+        return accesoData.listar().stream()
+                .anyMatch(a -> a.getIdUsuario().equals(id) && a.getFechaHoraSalida() == null);
     }
 }

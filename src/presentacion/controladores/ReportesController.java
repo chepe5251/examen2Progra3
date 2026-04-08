@@ -50,8 +50,6 @@ public class ReportesController {
         return scroll;
     }
 
-    // ── Encabezado ────────────────────────────────────────────────────────────
-
     private Node construirEncabezado() {
         VBox caja = new VBox(4);
         Label titulo    = new Label("📋  Reportes de Acceso");
@@ -61,8 +59,6 @@ public class ReportesController {
         caja.getChildren().addAll(titulo, subtitulo);
         return caja;
     }
-
-    // ── Formulario de búsqueda ────────────────────────────────────────────────
 
     private Node construirBusqueda() {
         VBox card = new VBox(16);
@@ -95,12 +91,9 @@ public class ReportesController {
         return card;
     }
 
-    // ── Tarjetas de resumen ───────────────────────────────────────────────────
-
     private Node construirResumen() {
         HBox fila = new HBox(16);
 
-        // Tarjeta: total registros
         VBox card1 = new VBox(8);
         card1.setPadding(new Insets(20));
         card1.setStyle(EstilosUI.TARJETA);
@@ -111,7 +104,6 @@ public class ReportesController {
         labelTotalRegistros.setTextFill(Color.web(EstilosUI.PRIMARIO));
         card1.getChildren().addAll(etiq1, labelTotalRegistros);
 
-        // Tarjeta: tiempo total
         VBox card2 = new VBox(8);
         card2.setPadding(new Insets(20));
         card2.setStyle(EstilosUI.TARJETA);
@@ -129,8 +121,6 @@ public class ReportesController {
         return fila;
     }
 
-    // ── Tabla de historial ────────────────────────────────────────────────────
-
     private Node construirTabla() {
         VBox card = new VBox(16);
         card.setPadding(new Insets(24));
@@ -145,19 +135,16 @@ public class ReportesController {
         tabla.setStyle("-fx-background-color: transparent;");
         tabla.setPlaceholder(new Label("Busca un usuario para ver su historial de accesos."));
 
-        // Columna usuario
         TableColumn<Acceso, String> colUsuario = new TableColumn<>("#  Usuario");
         colUsuario.setPrefWidth(110);
         colUsuario.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getIdUsuario()));
 
-        // Columna entrada
         TableColumn<Acceso, String> colEntrada = new TableColumn<>("Fecha de Entrada");
         colEntrada.setPrefWidth(185);
         colEntrada.setCellValueFactory(d ->
             new SimpleStringProperty(d.getValue().getFechaHoraEntrada().format(FMT))
         );
 
-        // Columna salida
         TableColumn<Acceso, String> colSalida = new TableColumn<>("Fecha de Salida");
         colSalida.setPrefWidth(185);
         colSalida.setCellValueFactory(d -> {
@@ -165,17 +152,17 @@ public class ReportesController {
             return new SimpleStringProperty(salida != null ? salida.format(FMT) : "—  Aún dentro");
         });
 
-        // Columna duración
         TableColumn<Acceso, String> colDuracion = new TableColumn<>("Duración");
         colDuracion.setPrefWidth(130);
         colDuracion.setCellValueFactory(d -> {
             Acceso a = d.getValue();
-            if (a.getFechaHoraSalida() == null) return new SimpleStringProperty("En curso");
+            if (a.getFechaHoraSalida() == null) {
+                return new SimpleStringProperty("En curso");
+            }
             long mins = Duration.between(a.getFechaHoraEntrada(), a.getFechaHoraSalida()).toMinutes();
             return new SimpleStringProperty(mins / 60 + " h  " + mins % 60 + " min");
         });
 
-        // Columna estado con badge
         TableColumn<Acceso, String> colEstado = new TableColumn<>("Estado");
         colEstado.setPrefWidth(110);
         colEstado.setCellValueFactory(d ->
@@ -185,7 +172,10 @@ public class ReportesController {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
-                if (empty || estado == null) { setGraphic(null); return; }
+                if (empty || estado == null) {
+                    setGraphic(null);
+                    return;
+                }
                 Label badge = new Label(estado);
                 badge.setFont(Font.font("System", FontWeight.BOLD, 11));
                 badge.setTextFill(Color.WHITE);
@@ -199,12 +189,14 @@ public class ReportesController {
             }
         });
 
-        tabla.getColumns().addAll(colUsuario, colEntrada, colSalida, colDuracion, colEstado);
+        tabla.getColumns().add(colUsuario);
+        tabla.getColumns().add(colEntrada);
+        tabla.getColumns().add(colSalida);
+        tabla.getColumns().add(colDuracion);
+        tabla.getColumns().add(colEstado);
         card.getChildren().addAll(titulo, tabla);
         return card;
     }
-
-    // ── Acciones ──────────────────────────────────────────────────────────────
 
     private void buscar() {
         String id = campoBusqueda.getText().trim();
@@ -224,6 +216,8 @@ public class ReportesController {
             labelTiempoTotal.setText(horas + " h  " + mins + " min");
 
         } catch (Exception ex) {
+            datos.clear();
+            resetResumen();
             EstilosUI.error("Error en la búsqueda", ex.getMessage());
         }
     }
@@ -231,6 +225,10 @@ public class ReportesController {
     private void limpiar() {
         campoBusqueda.clear();
         datos.clear();
+        resetResumen();
+    }
+
+    private void resetResumen() {
         labelTotalRegistros.setText("—");
         labelTiempoTotal.setText("—");
     }

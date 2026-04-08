@@ -49,8 +49,6 @@ public class UsuariosController {
         return scroll;
     }
 
-    // ── Encabezado ────────────────────────────────────────────────────────────
-
     private Node construirEncabezado() {
         VBox caja = new VBox(4);
         Label titulo    = new Label("👥  Gestión de Usuarios");
@@ -61,8 +59,6 @@ public class UsuariosController {
         return caja;
     }
 
-    // ── Formulario ────────────────────────────────────────────────────────────
-
     private Node construirFormulario() {
         VBox card = new VBox(16);
         card.setPadding(new Insets(24));
@@ -71,7 +67,6 @@ public class UsuariosController {
         Label titulo = new Label("Registrar Nuevo Usuario");
         titulo.setStyle(EstilosUI.tituloSeccion());
 
-        // Campos en fila
         HBox campos = new HBox(16);
         campos.setAlignment(Pos.BOTTOM_LEFT);
 
@@ -118,8 +113,6 @@ public class UsuariosController {
         return tf;
     }
 
-    // ── Tabla ─────────────────────────────────────────────────────────────────
-
     private Node construirTabla() {
         VBox card = new VBox(16);
         card.setPadding(new Insets(24));
@@ -134,24 +127,24 @@ public class UsuariosController {
         tabla.setPlaceholder(new Label("No hay usuarios registrados."));
         tabla.setStyle("-fx-background-color: transparent;");
 
-        // Columna ID
         TableColumn<Usuario, String> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getId()));
         colId.setPrefWidth(120);
 
-        // Columna Nombre
         TableColumn<Usuario, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNombre()));
         colNombre.setPrefWidth(240);
 
-        // Columna Rol con badge de color
         TableColumn<Usuario, String> colRol = new TableColumn<>("Rol");
         colRol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getRol().name()));
         colRol.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String rol, boolean empty) {
                 super.updateItem(rol, empty);
-                if (empty || rol == null) { setGraphic(null); return; }
+                if (empty || rol == null) {
+                    setGraphic(null);
+                    return;
+                }
                 Label badge = new Label(rol);
                 badge.setFont(Font.font("System", FontWeight.BOLD, 11));
                 badge.setTextFill(Color.WHITE);
@@ -165,7 +158,6 @@ public class UsuariosController {
             }
         });
 
-        // Columna acciones
         TableColumn<Usuario, Void> colAccion = new TableColumn<>("Acción");
         colAccion.setPrefWidth(120);
         colAccion.setCellFactory(col -> new TableCell<>() {
@@ -187,12 +179,13 @@ public class UsuariosController {
             }
         });
 
-        tabla.getColumns().addAll(colId, colNombre, colRol, colAccion);
+        tabla.getColumns().add(colId);
+        tabla.getColumns().add(colNombre);
+        tabla.getColumns().add(colRol);
+        tabla.getColumns().add(colAccion);
         card.getChildren().addAll(titulo, tabla);
         return card;
     }
-
-    // ── Acciones ──────────────────────────────────────────────────────────────
 
     private void registrarUsuario() {
         String id     = campoId.getText().trim();
@@ -218,7 +211,7 @@ public class UsuariosController {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmar eliminación");
         confirm.setHeaderText(null);
-        confirm.setContentText("¿Deseas eliminar al usuario con ID: " + id + "?\nEsta acción no se puede deshacer.");
+        confirm.setContentText("¿Deseas eliminar al usuario con ID: " + id + "?\nSi tiene historial, este se conserva; si está activo, la operación se bloquea.");
         confirm.getDialogPane().setStyle("-fx-background-color: white; -fx-font-size: 13px;");
 
         confirm.showAndWait().ifPresent(resp -> {

@@ -1,18 +1,18 @@
 Dim ruta, src, shell
+Dim resultado
 
 ruta = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
 src  = ruta & "src"
 
 Set shell = CreateObject("WScript.Shell")
 
-' Paso 1: Compilar en silencio (ventana oculta, espera a que termine)
-shell.Run "cmd /c cd /d """ & src & """ && javac" & _
-    " --module-path ""C:\javafx-sdk-26\javafx-sdk-26\lib""" & _
-    " --add-modules javafx.controls" & _
-    " entidades/*.java accesodatos/*.java logicaNegocio/*.java" & _
-    " presentacion/util/EstilosUI.java" & _
-    " presentacion/controladores/*.java" & _
-    " presentacion/MainApp.java", 0, True
+' Paso 1: Compilar en silencio y validar el resultado
+resultado = shell.Run("cmd /c """ & ruta & "compilar.bat""", 0, True)
+
+If resultado <> 0 Then
+    MsgBox "No se pudo compilar el proyecto. Revisa la configuracion de Java y JavaFX.", vbCritical, "Lab Access"
+    WScript.Quit resultado
+End If
 
 ' Paso 2: Lanzar la aplicacion con javaw (sin consola)
 shell.Run "javaw" & _
