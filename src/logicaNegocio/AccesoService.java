@@ -23,14 +23,17 @@ public class AccesoService {
     public void registrarEntrada(String idUsuario) throws IOException {
         validarIdNoVacio(idUsuario);
         validarUsuarioExiste(idUsuario);
+        validarSinEntradaActiva(idUsuario);
+        accesoData.guardar(new Acceso(idUsuario, LocalDateTime.now()));
+    }
 
+    private void validarSinEntradaActiva(String idUsuario) throws IOException {
         if (tieneEntradaActiva(idUsuario)) {
             throw new IllegalStateException(
-                "El usuario " + idUsuario + " ya tiene una entrada activa. Debe registrar salida primero."
+                "Doble entrada no permitida: el usuario '" + idUsuario +
+                "' ya tiene una entrada activa sin salida registrada."
             );
         }
-
-        accesoData.guardar(new Acceso(idUsuario, LocalDateTime.now()));
     }
 
     public void registrarSalida(String idUsuario) throws IOException {
