@@ -237,6 +237,49 @@ El proyecto sigue una arquitectura por capas.
 | `logicaNegocio` | `UsuarioService`, `AccesoService` | Validaciones y reglas del sistema |
 | `presentacion` | `MainApp`, `Main`, controladores, `EstilosUI` | UI JavaFX y modo consola |
 
+### Diagrama visual
+
+```mermaid
+flowchart TB
+    subgraph P["1. Presentacion"]
+        P1["MainApp / Main<br/>Controladores / EstilosUI"]
+    end
+
+    subgraph L["2. Logica de negocio"]
+        L1["UsuarioService / AccesoService"]
+    end
+
+    subgraph D["3. Acceso a datos"]
+        D1["UsuarioData / AccesoData / RutaDatos"]
+    end
+
+    subgraph E["4. Entidades"]
+        E1["Usuario / Acceso / Rol"]
+    end
+
+    P1 -->|"acciones del usuario"| L1
+    L1 -->|"consultas y persistencia"| D1
+    L1 -.->|"usa modelos"| E1
+    D1 -.->|"serializa y recupera"| E1
+
+    classDef presentacion fill:#0f172a,color:#ffffff,stroke:#1e293b,stroke-width:2px;
+    classDef logica fill:#2563eb,color:#ffffff,stroke:#1d4ed8,stroke-width:2px;
+    classDef datos fill:#f59e0b,color:#111827,stroke:#d97706,stroke-width:2px;
+    classDef entidades fill:#10b981,color:#06281c,stroke:#059669,stroke-width:2px;
+
+    class P1 presentacion;
+    class L1 logica;
+    class D1 datos;
+    class E1 entidades;
+```
+
+Lectura rápida del diagrama:
+
+- Flujo principal: `Presentacion -> Logica de negocio -> Acceso a datos`.
+- `Entidades` representa el modelo del sistema y lo usan tanto `logicaNegocio` como `accesodatos`.
+- Flechas continuas: dependencia directa entre capas.
+- Flechas punteadas: uso de modelos del dominio.
+
 Flujo principal:
 
 - `presentacion` usa `logicaNegocio`.
