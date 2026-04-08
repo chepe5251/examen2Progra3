@@ -78,15 +78,70 @@
 
 ---
 
+### Prompt 6 — Archivo IA_USO.md
+
+> "Genera un archivo IA_USO.md para un proyecto Java. Debe incluir: prompts utilizados,
+> qué parte del sistema generó cada prompt, ajustes manuales realizados y justificación
+> técnica del uso de IA. Formato profesional en Markdown."
+
+**Resultado generado:**
+- `IA_USO.md` — documentación completa del uso de IA con 4 secciones estructuradas
+
+---
+
+### Prompt 7 — Diagrama Mermaid de arquitectura
+
+> "Genera un diagrama simple en Mermaid para incluir dentro del README.md que represente
+> la arquitectura por capas: Presentacion, LogicaNegocio, AccesoDatos, Entidades.
+> Presentacion solo puede comunicarse con LogicaNegocio. No debe existir relación directa
+> entre Presentacion y AccesoDatos."
+
+**Resultado generado:**
+- Bloque `mermaid` con `flowchart TD`, flechas etiquetadas y estilos de color por capa
+- Integrado directamente en `README.md` dentro de la sección "Diagrama de Arquitectura"
+
+---
+
+### Prompt 8 — CHANGELOG.md
+
+> "Genera un archivo CHANGELOG.md en español para el proyecto. Versiones obligatorias:
+> v1.0 creación de entidades, v1.1 implementación de acceso a datos, v1.2 lógica de negocio,
+> v1.3 validaciones y pruebas. Para cada versión: descripción, lista de cambios y
+> coherencia con el proyecto."
+
+**Resultado generado:**
+- `CHANGELOG.md` — cuatro versiones documentadas con secciones Añadido / Corregido
+- Tabla final de historial de commits con hashes reales del repositorio
+
+---
+
+### Prompt 9 — Revisión y mejora del README.md
+
+> "Revisa el README.md de mi proyecto Java universitario y mejóralo sin cambiar el propósito
+> del sistema. Verifica claridad de redacción, ortografía, orden lógico de secciones,
+> coherencia técnica con arquitectura por capas y que el diagrama Mermaid esté bien
+> integrado."
+
+**Resultado generado:**
+- `README.md` revisado con correcciones de estructura, redacción y coherencia técnica
+
+---
+
 ## 2. Parte del Sistema Generada por Cada Prompt
 
-| Prompt | Capa | Archivos generados |
-|--------|------|--------------------|
-| 1 | Todas (esqueleto) | Estructura de paquetes + clases iniciales |
+| Prompt | Área | Archivos generados o modificados |
+|--------|------|----------------------------------|
+| 1 | Todas las capas (esqueleto) | Estructura de paquetes + clases iniciales |
 | 2 | `entidades` | `Rol.java`, `Usuario.java`, `Acceso.java` |
 | 3 | `accesodatos` | `UsuarioData.java`, `AccesoData.java` |
 | 4 | `logicaNegocio` | `UsuarioService.java`, `AccesoService.java` |
 | 5 | `presentacion` | `Main.java` |
+| 6 | Documentación | `IA_USO.md` |
+| 7 | Documentación | `README.md` (sección Diagrama de Arquitectura) |
+| 8 | Documentación | `CHANGELOG.md` |
+| 9 | Documentación | `README.md` (revisión y mejora general) |
+
+---
 
 ---
 
@@ -155,6 +210,9 @@ ni tipos de retorno manualmente.
 | La IA incluyó lógica de negocio dentro de `Acceso.java` (`estaActivo()`) | Se eliminó manualmente |
 | Nombre de clase `RegistroAcceso` no alineado con el dominio | Se renombró a `Acceso` |
 | Acentos en strings pueden causar problemas en consolas Windows | Se eliminaron manualmente |
+| El README generado contenía dos diagramas Mermaid redundantes | Se consolidaron en uno dentro de la sección "Diagrama de Arquitectura" |
+| La tabla de capas usaba nombres en minúsculas inconsistentes con el código | Se corrigieron a `Entidades`, `AccesoDatos`, etc. |
+| La sección Notas del README contenía texto de plantilla sin contenido real | Se reemplazó por notas técnicas concretas |
 
 ### 4.5 Conclusión
 
