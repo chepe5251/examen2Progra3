@@ -20,11 +20,11 @@ import java.util.Locale;
 public class MainController {
 
     private final BorderPane root;
-    private final StackPane  contentArea;
+    private final StackPane contentArea;
     private Button btnActivo;
 
     public MainController() {
-        root        = new BorderPane();
+        root = new BorderPane();
         contentArea = new StackPane();
         contentArea.setStyle("-fx-background-color: " + EstilosUI.FONDO + ";");
 
@@ -36,25 +36,30 @@ public class MainController {
     }
 
     private HBox construirTopBar() {
-        HBox bar = new HBox();
+        HBox bar = new HBox(18);
         bar.setAlignment(Pos.CENTER_LEFT);
-        bar.setPadding(new Insets(0, 24, 0, 24));
-        bar.setPrefHeight(52);
+        bar.setPadding(new Insets(16, 28, 16, 28));
         bar.setStyle(
-            "-fx-background-color: white;" +
+            "-fx-background-color: " + EstilosUI.SUPERFICIE + ";" +
             "-fx-border-color: transparent transparent " + EstilosUI.BORDE + " transparent;" +
             "-fx-border-width: 0 0 1 0;"
         );
 
-        Label appName = new Label("Sistema de Control de Acceso · Laboratorio");
-        appName.setFont(Font.font("System", FontWeight.BOLD, 14));
+        VBox textos = new VBox(2);
+        Label appName = new Label("Sistema de Control de Acceso");
+        appName.setFont(Font.font("Segoe UI", FontWeight.BOLD, 17));
         appName.setTextFill(Color.web(EstilosUI.TEXTO));
+
+        Label appSubtitle = new Label("Laboratorio académico · panel principal");
+        appSubtitle.setFont(Font.font("Segoe UI", 12));
+        appSubtitle.setTextFill(Color.web(EstilosUI.TEXTO_SUAVE));
+        textos.getChildren().addAll(appName, appSubtitle);
 
         Region espaciador = new Region();
         HBox.setHgrow(espaciador, Priority.ALWAYS);
 
         Label reloj = new Label();
-        reloj.setFont(Font.font("System", 13));
+        reloj.setFont(Font.font("Segoe UI", 12.5));
         reloj.setTextFill(Color.web(EstilosUI.TEXTO_SUAVE));
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM  ·  HH:mm:ss",
@@ -66,63 +71,78 @@ public class MainController {
         tl.play();
         reloj.setText(LocalDateTime.now().format(fmt));
 
-        bar.getChildren().addAll(appName, espaciador, reloj);
+        bar.getChildren().addAll(textos, espaciador, reloj);
         return bar;
     }
 
     private VBox construirSidebar() {
         VBox sidebar = new VBox();
-        sidebar.setPrefWidth(230);
+        sidebar.setPrefWidth(244);
+        sidebar.setPadding(new Insets(18, 14, 18, 14));
         sidebar.setStyle("-fx-background-color: " + EstilosUI.SIDEBAR + ";");
 
-        VBox logo = new VBox(4);
-        logo.setPadding(new Insets(28, 20, 24, 20));
+        HBox logo = new HBox(12);
         logo.setAlignment(Pos.CENTER_LEFT);
+        logo.setPadding(new Insets(12, 10, 18, 10));
 
-        Label icono = new Label("🔬");
-        icono.setFont(Font.font(30));
+        StackPane marca = new StackPane();
+        marca.setPrefSize(40, 40);
+        marca.setMaxSize(40, 40);
+        marca.setStyle(
+            "-fx-background-color: " + EstilosUI.PRIMARIO + "20;" +
+            "-fx-border-color: " + EstilosUI.PRIMARIO + "44;" +
+            "-fx-border-width: 1;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-radius: 12;"
+        );
 
+        Label iniciales = new Label("LA");
+        iniciales.setFont(Font.font("Segoe UI", FontWeight.BOLD, 13));
+        iniciales.setTextFill(Color.web(EstilosUI.TEXTO_CLARO));
+        marca.getChildren().add(iniciales);
+
+        VBox textos = new VBox(2);
         Label nombre = new Label("Lab Access");
-        nombre.setFont(Font.font("System", FontWeight.BOLD, 18));
+        nombre.setFont(Font.font("Segoe UI", FontWeight.BOLD, 17));
         nombre.setTextFill(Color.WHITE);
 
-        Label subtitulo = new Label("Control de Acceso");
-        subtitulo.setFont(Font.font("System", 12));
+        Label subtitulo = new Label("Control del laboratorio");
+        subtitulo.setFont(Font.font("Segoe UI", 11.5));
         subtitulo.setTextFill(Color.web("#94a3b8"));
-
-        logo.getChildren().addAll(icono, nombre, subtitulo);
+        textos.getChildren().addAll(nombre, subtitulo);
+        logo.getChildren().addAll(marca, textos);
 
         Region divisor = new Region();
         divisor.setPrefHeight(1);
-        divisor.setStyle("-fx-background-color: #1e293b;");
-        VBox.setMargin(divisor, new Insets(0, 16, 16, 16));
+        divisor.setStyle("-fx-background-color: #202a3f;");
+        VBox.setMargin(divisor, new Insets(0, 10, 14, 10));
 
-        Label navLabel = new Label("MENÚ");
-        navLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
-        navLabel.setTextFill(Color.web("#475569"));
-        VBox.setMargin(navLabel, new Insets(0, 0, 6, 20));
+        Label navLabel = new Label("NAVEGACION");
+        navLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 10));
+        navLabel.setTextFill(Color.web("#64748b"));
+        VBox.setMargin(navLabel, new Insets(0, 0, 8, 12));
 
-        Button bDashboard = crearBotonNav("📊   Dashboard");
-        Button bUsuarios  = crearBotonNav("👥   Usuarios");
-        Button bAccesos   = crearBotonNav("🚪   Accesos");
-        Button bReportes  = crearBotonNav("📋   Reportes");
+        Button bDashboard = crearBotonNav("Dashboard");
+        Button bUsuarios = crearBotonNav("Usuarios");
+        Button bAccesos = crearBotonNav("Accesos");
+        Button bReportes = crearBotonNav("Reportes");
 
         bDashboard.setOnAction(e -> cambiarSeccion(bDashboard, new DashboardController().getView()));
-        bUsuarios .setOnAction(e -> cambiarSeccion(bUsuarios,  new UsuariosController().getView()));
-        bAccesos  .setOnAction(e -> cambiarSeccion(bAccesos,   new AccesosController().getView()));
-        bReportes .setOnAction(e -> cambiarSeccion(bReportes,  new ReportesController().getView()));
+        bUsuarios.setOnAction(e -> cambiarSeccion(bUsuarios, new UsuariosController().getView()));
+        bAccesos.setOnAction(e -> cambiarSeccion(bAccesos, new AccesosController().getView()));
+        bReportes.setOnAction(e -> cambiarSeccion(bReportes, new ReportesController().getView()));
 
         for (Button btn : new Button[]{bDashboard, bUsuarios, bAccesos, bReportes}) {
-            VBox.setMargin(btn, new Insets(2, 10, 2, 10));
+            VBox.setMargin(btn, new Insets(3, 4, 3, 4));
         }
 
         Region espaciador = new Region();
         VBox.setVgrow(espaciador, Priority.ALWAYS);
 
-        Label version = new Label("v2.1  ·  Universidad Latina");
-        version.setFont(Font.font("System", 11));
-        version.setTextFill(Color.web("#334155"));
-        VBox.setMargin(version, new Insets(16, 0, 20, 20));
+        Label version = new Label("Universidad Latina  ·  v2.3");
+        version.setFont(Font.font("Segoe UI", 11));
+        version.setTextFill(Color.web("#64748b"));
+        VBox.setMargin(version, new Insets(18, 0, 6, 12));
 
         sidebar.getChildren().addAll(
             logo, divisor, navLabel,
@@ -138,13 +158,20 @@ public class MainController {
         Button btn = new Button(texto);
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setAlignment(Pos.CENTER_LEFT);
-        btn.setPadding(new Insets(11, 16, 11, 16));
-        btn.setFont(Font.font("System", 13));
+        btn.setPadding(new Insets(12, 16, 12, 16));
+        btn.setFont(Font.font("Segoe UI", FontWeight.BOLD, 13));
         estiloInactivo(btn);
 
-        btn.setOnMouseEntered(e -> { if (btn != btnActivo) estiloHover(btn); });
-        btn.setOnMouseExited (e -> { if (btn != btnActivo) estiloInactivo(btn); });
-
+        btn.setOnMouseEntered(e -> {
+            if (btn != btnActivo) {
+                estiloHover(btn);
+            }
+        });
+        btn.setOnMouseExited(e -> {
+            if (btn != btnActivo) {
+                estiloInactivo(btn);
+            }
+        });
         return btn;
     }
 
@@ -165,9 +192,11 @@ public class MainController {
         }
         btnActivo = btn;
         btn.setStyle(
-            "-fx-background-color: linear-gradient(to right, " + EstilosUI.PRIMARIO + " 3px, #1e293b 3px);" +
+            "-fx-background-color: " + EstilosUI.PRIMARIO + "18;" +
             "-fx-text-fill: white;" +
-            "-fx-background-radius: 8;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-color: transparent transparent transparent " + EstilosUI.PRIMARIO + ";" +
+            "-fx-border-width: 0 0 0 3;" +
             "-fx-cursor: hand;"
         );
     }
@@ -175,17 +204,19 @@ public class MainController {
     private void estiloInactivo(Button btn) {
         btn.setStyle(
             "-fx-background-color: transparent;" +
-            "-fx-text-fill: #94a3b8;" +
-            "-fx-background-radius: 8;" +
+            "-fx-text-fill: " + EstilosUI.TEXTO_CLARO + ";" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-color: transparent;" +
             "-fx-cursor: hand;"
         );
     }
 
     private void estiloHover(Button btn) {
         btn.setStyle(
-            "-fx-background-color: " + EstilosUI.SIDEBAR_HOVER + ";" +
+            "-fx-background-color: rgba(255,255,255,0.06);" +
             "-fx-text-fill: white;" +
-            "-fx-background-radius: 8;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-color: transparent;" +
             "-fx-cursor: hand;"
         );
     }

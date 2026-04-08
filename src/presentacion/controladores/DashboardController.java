@@ -17,15 +17,15 @@ import presentacion.util.EstilosUI;
 public class DashboardController {
 
     private final UsuarioService usuarioService = new UsuarioService();
-    private final AccesoService  accesoService  = new AccesoService();
+    private final AccesoService accesoService = new AccesoService();
 
     public Node getView() {
         ScrollPane scroll = new ScrollPane();
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        VBox contenido = new VBox(24);
-        contenido.setPadding(new Insets(32));
+        VBox contenido = new VBox(28);
+        contenido.setPadding(new Insets(36));
         contenido.setStyle("-fx-background-color: " + EstilosUI.FONDO + ";");
 
         contenido.getChildren().addAll(
@@ -39,146 +39,150 @@ public class DashboardController {
         return scroll;
     }
 
-    // ── Encabezado ────────────────────────────────────────────────────────────
-
     private Node construirEncabezado() {
-        HBox fila = new HBox();
-        fila.setAlignment(Pos.CENTER_LEFT);
-
-        VBox textos = new VBox(4);
-        Label titulo    = new Label("Dashboard");
+        VBox caja = new VBox(6);
+        Label titulo = new Label("Dashboard");
         titulo.setStyle(EstilosUI.titulo());
-        Label subtitulo = new Label("Resumen general del sistema de control de acceso al laboratorio");
-        subtitulo.setStyle(EstilosUI.subtitulo());
-        textos.getChildren().addAll(titulo, subtitulo);
 
-        fila.getChildren().add(textos);
-        return fila;
+        Label subtitulo = new Label("Vista general del sistema y del estado actual del laboratorio.");
+        subtitulo.setStyle(EstilosUI.subtitulo());
+        caja.getChildren().addAll(titulo, subtitulo);
+        return caja;
     }
 
-    // ── Tarjetas de métricas ──────────────────────────────────────────────────
-
     private Node construirTarjetasMetrica() {
-        int totalUsuarios  = 0;
-        long dentroLab     = 0;
-        int totalAccesos   = 0;
+        int totalUsuarios = 0;
+        long dentroLab = 0;
+        int totalAccesos = 0;
 
-        try { totalUsuarios = usuarioService.listar().size(); }             catch (Exception ignored) {}
-        try { dentroLab     = accesoService.contarDentroDelLaboratorio(); } catch (Exception ignored) {}
-        try { totalAccesos  = accesoService.listarTodosLosAccesos().size(); } catch (Exception ignored) {}
+        try {
+            totalUsuarios = usuarioService.listar().size();
+        } catch (Exception ignored) {
+        }
+        try {
+            dentroLab = accesoService.contarDentroDelLaboratorio();
+        } catch (Exception ignored) {
+        }
+        try {
+            totalAccesos = accesoService.listarTodosLosAccesos().size();
+        } catch (Exception ignored) {
+        }
 
-        HBox fila = new HBox(16);
+        HBox fila = new HBox(18);
         fila.getChildren().addAll(
-            crearTarjeta("👥", "Usuarios Registrados", String.valueOf(totalUsuarios), EstilosUI.PRIMARIO),
-            crearTarjeta("🟢", "Dentro del Laboratorio", String.valueOf(dentroLab),    EstilosUI.EXITO),
-            crearTarjeta("📋", "Total de Accesos",       String.valueOf(totalAccesos), EstilosUI.ADVERTENCIA)
+            crearTarjeta("Usuarios registrados", String.valueOf(totalUsuarios), "Base activa del sistema", EstilosUI.PRIMARIO),
+            crearTarjeta("Dentro del laboratorio", String.valueOf(dentroLab), "Personas con entrada abierta", EstilosUI.EXITO),
+            crearTarjeta("Accesos acumulados", String.valueOf(totalAccesos), "Historial total registrado", EstilosUI.ADVERTENCIA)
         );
 
         for (Node tarjeta : fila.getChildren()) {
             HBox.setHgrow(tarjeta, Priority.ALWAYS);
         }
-
         return fila;
     }
 
-    private Node crearTarjeta(String emoji, String etiqueta, String valor, String color) {
-        VBox tarjeta = new VBox(14);
-        tarjeta.setPadding(new Insets(24));
-        tarjeta.setStyle(EstilosUI.TARJETA);
+    private Node crearTarjeta(String etiqueta, String valor, String detalle, String color) {
+        VBox tarjeta = new VBox(16);
+        tarjeta.setPadding(new Insets(26));
+        EstilosUI.aplicarHoverTarjeta(tarjeta);
 
-        // Ícono con fondo coloreado
-        Label iconoLabel = new Label(emoji);
-        iconoLabel.setFont(Font.font(22));
-        StackPane iconoBg = new StackPane(iconoLabel);
-        iconoBg.setPrefSize(46, 46);
-        iconoBg.setStyle(
-            "-fx-background-color: " + color + "22;" +
-            "-fx-background-radius: 10;"
-        );
-
-        HBox filaIcono = new HBox(12);
-        filaIcono.setAlignment(Pos.CENTER_LEFT);
-        Label etiqLabel = new Label(etiqueta);
-        etiqLabel.setStyle(EstilosUI.subtitulo());
-        etiqLabel.setWrapText(true);
-        filaIcono.getChildren().addAll(iconoBg, etiqLabel);
-
-        // Acento de color arriba de la tarjeta
-        Rectangle acento = new Rectangle(40, 4);
+        Rectangle acento = new Rectangle(54, 4);
         acento.setFill(Color.web(color));
-        acento.setArcWidth(4);
-        acento.setArcHeight(4);
+        acento.setArcWidth(6);
+        acento.setArcHeight(6);
+
+        Label etiquetaLabel = new Label(etiqueta.toUpperCase());
+        etiquetaLabel.setStyle(EstilosUI.kpiEtiqueta());
 
         Label valorLabel = new Label(valor);
-        valorLabel.setFont(Font.font("System", FontWeight.BOLD, 38));
-        valorLabel.setTextFill(Color.web(color));
+        valorLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 34));
+        valorLabel.setTextFill(Color.web(EstilosUI.TEXTO));
 
-        tarjeta.getChildren().addAll(acento, filaIcono, valorLabel);
+        Label detalleLabel = new Label(detalle);
+        detalleLabel.setStyle(EstilosUI.subtitulo());
+        detalleLabel.setWrapText(true);
+
+        tarjeta.getChildren().addAll(acento, etiquetaLabel, valorLabel, detalleLabel);
         return tarjeta;
     }
 
-    // ── Info del sistema ──────────────────────────────────────────────────────
-
     private Node construirInfoSistema() {
-        VBox card = new VBox(16);
-        card.setPadding(new Insets(24));
-        card.setStyle(EstilosUI.TARJETA);
+        VBox card = new VBox(18);
+        card.setPadding(new Insets(26));
+        EstilosUI.aplicarHoverTarjeta(card);
 
-        Label titulo = new Label("Información del Sistema");
+        Label titulo = new Label("Información del sistema");
         titulo.setStyle(EstilosUI.tituloSeccion());
 
         String[][] filas = {
-            {"🏗️  Arquitectura",    "Capas: Entidades · AccesoDatos · LogicaNegocio · Presentacion"},
-            {"💾  Persistencia",    "Archivos de texto plano: usuarios.txt  y  accesos.txt"},
-            {"🔐  Roles",           "Estudiante  ·  Docente"},
-            {"☕  Tecnología",      "Java 17+  ·  JavaFX"},
-            {"📦  Repositorio",     "github.com/chepe5251/examen2Progra3"}
+            {"Arquitectura", "Capas: Entidades · AccesoDatos · LogicaNegocio · Presentacion"},
+            {"Persistencia", "Archivos locales: usuarios.txt y accesos.txt"},
+            {"Roles", "Estudiante · Docente"},
+            {"Tecnologia", "Java 17+ · JavaFX"},
+            {"Repositorio", "github.com/chepe5251/examen2Progra3"}
         };
 
         GridPane grid = new GridPane();
-        grid.setHgap(32);
-        grid.setVgap(12);
+        grid.setHgap(28);
+        grid.setVgap(14);
 
         for (int i = 0; i < filas.length; i++) {
-            Label clave = new Label(filas[i][0]);
-            clave.setFont(Font.font("System", FontWeight.BOLD, 13));
-            clave.setTextFill(Color.web(EstilosUI.TEXTO));
+            Label clave = new Label(filas[i][0].toUpperCase());
+            clave.setStyle(EstilosUI.kpiEtiqueta());
 
             Label valor = new Label(filas[i][1]);
-            valor.setFont(Font.font("System", 13));
-            valor.setTextFill(Color.web(EstilosUI.TEXTO_SUAVE));
+            valor.setStyle(EstilosUI.subtitulo());
+            valor.setWrapText(true);
 
             grid.add(clave, 0, i);
             grid.add(valor, 1, i);
         }
 
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setMinWidth(150);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(col1, col2);
+
         card.getChildren().addAll(titulo, grid);
         return card;
     }
 
-    // ── Reglas y política ─────────────────────────────────────────────────────
-
     private Node construirReglasDePolitica() {
-        VBox card = new VBox(12);
-        card.setPadding(new Insets(24));
-        card.setStyle(EstilosUI.TARJETA);
+        VBox card = new VBox(14);
+        card.setPadding(new Insets(26));
+        EstilosUI.aplicarHoverTarjeta(card);
 
-        Label titulo = new Label("Reglas de Acceso");
+        Label titulo = new Label("Reglas de acceso");
         titulo.setStyle(EstilosUI.tituloSeccion());
 
         String[] reglas = {
-            "✅  Un usuario solo puede registrar entrada si no tiene una entrada activa previa.",
-            "✅  No se puede registrar salida sin una entrada activa registrada.",
-            "✅  Los IDs de usuario son únicos — no se permiten duplicados.",
-            "✅  El tiempo en laboratorio solo considera accesos con entrada y salida registradas."
+            "Un usuario solo puede registrar entrada si no tiene una entrada activa previa.",
+            "No se puede registrar salida sin una entrada activa registrada.",
+            "Los IDs de usuario son únicos y no se permiten duplicados.",
+            "El tiempo en laboratorio solo considera accesos con entrada y salida registradas."
         };
 
-        VBox lista = new VBox(8);
+        VBox lista = new VBox(12);
         for (String regla : reglas) {
-            Label item = new Label(regla);
-            item.setStyle("-fx-font-size: 13px;-fx-text-fill: " + EstilosUI.TEXTO + ";");
-            item.setWrapText(true);
-            lista.getChildren().add(item);
+            HBox fila = new HBox(10);
+            fila.setAlignment(Pos.TOP_LEFT);
+
+            Region punto = new Region();
+            punto.setPrefSize(8, 8);
+            punto.setMaxSize(8, 8);
+            punto.setStyle(
+                "-fx-background-color: " + EstilosUI.PRIMARIO + ";" +
+                "-fx-background-radius: 999;"
+            );
+            VBox.setMargin(punto, new Insets(6, 0, 0, 0));
+
+            Label texto = new Label(regla);
+            texto.setWrapText(true);
+            texto.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-size: 13px; -fx-text-fill: " + EstilosUI.TEXTO + ";");
+
+            fila.getChildren().addAll(punto, texto);
+            lista.getChildren().add(fila);
         }
 
         card.getChildren().addAll(titulo, lista);

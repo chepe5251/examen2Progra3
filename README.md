@@ -47,6 +47,15 @@ Versión actual del proyecto:
 - Reportes con historial por usuario y tiempo total acumulado.
 - Persistencia estable en archivos `.txt` dentro de `src`, sin depender del directorio desde el que se ejecute la aplicación.
 - Scripts de Windows para compilar y ejecutar tanto la interfaz gráfica como el modo consola.
+- Interfaz visual refinada con una línea más sobria y profesional.
+- Menor dependencia de emojis visibles dentro de la navegación y las pantallas principales.
+- Jerarquía tipográfica más clara entre títulos, subtítulos, secciones y métricas.
+- Paleta más suave, con azules y naranjas menos saturados.
+- Más aire visual en tarjetas, formularios, tablas y paneles.
+- Tablas con encabezados más legibles, zebra striping sutil y hover por fila.
+- Badges más compactos para roles y estados.
+- Estados inline más elegantes en el módulo de accesos.
+- Tarjetas con borde fino, sombra más suave y hover leve.
 
 ---
 
@@ -75,6 +84,12 @@ Versión actual del proyecto:
 - Duración por visita.
 - Tiempo total acumulado dentro del laboratorio.
 - Consulta por ID incluso si el usuario ya no está en la lista activa.
+
+### Pulido visual
+- Sidebar más sobria y consistente con la paleta general.
+- Topbar más limpia y con mejor separación visual.
+- Tablas más cercanas a una aplicación de escritorio real y menos a un CRUD básico.
+- Paneles de entrada y salida con retroalimentación visual dentro de la misma vista.
 
 ---
 

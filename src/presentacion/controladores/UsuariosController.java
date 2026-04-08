@@ -33,8 +33,8 @@ public class UsuariosController {
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        VBox contenido = new VBox(24);
-        contenido.setPadding(new Insets(32));
+        VBox contenido = new VBox(28);
+        contenido.setPadding(new Insets(36));
         contenido.setStyle("-fx-background-color: " + EstilosUI.FONDO + ";");
 
         contenido.getChildren().addAll(
@@ -44,44 +44,42 @@ public class UsuariosController {
         );
 
         cargarDatos();
-
         scroll.setContent(contenido);
         return scroll;
     }
 
     private Node construirEncabezado() {
-        VBox caja = new VBox(4);
-        Label titulo    = new Label("👥  Gestión de Usuarios");
+        VBox caja = new VBox(6);
+        Label titulo = new Label("Gestión de usuarios");
         titulo.setStyle(EstilosUI.titulo());
-        Label subtitulo = new Label("Registra, consulta y elimina usuarios del sistema");
+        Label subtitulo = new Label("Administra usuarios, roles y eliminación controlada dentro del sistema.");
         subtitulo.setStyle(EstilosUI.subtitulo());
         caja.getChildren().addAll(titulo, subtitulo);
         return caja;
     }
 
     private Node construirFormulario() {
-        VBox card = new VBox(16);
-        card.setPadding(new Insets(24));
-        card.setStyle(EstilosUI.TARJETA);
+        VBox card = new VBox(18);
+        card.setPadding(new Insets(26));
+        EstilosUI.aplicarHoverTarjeta(card);
 
-        Label titulo = new Label("Registrar Nuevo Usuario");
+        Label titulo = new Label("Registrar nuevo usuario");
         titulo.setStyle(EstilosUI.tituloSeccion());
 
         HBox campos = new HBox(16);
         campos.setAlignment(Pos.BOTTOM_LEFT);
 
-        campoId     = crearCampo("ID de Usuario", 160);
-        campoNombre = crearCampo("Nombre Completo", 260);
+        campoId = crearCampo("ID de usuario", 170);
+        campoNombre = crearCampo("Nombre completo", 300);
 
         comboRol = new ComboBox<>();
         comboRol.getItems().addAll("ESTUDIANTE", "DOCENTE");
         comboRol.setPromptText("Rol");
-        comboRol.setPrefWidth(160);
+        comboRol.setPrefWidth(180);
         comboRol.setStyle(EstilosUI.campo());
 
-        Button btnRegistrar = new Button("Registrar Usuario");
-        btnRegistrar.setStyle(EstilosUI.boton(EstilosUI.PRIMARIO));
-        EstilosUI.aplicarHover(btnRegistrar, EstilosUI.PRIMARIO, "#2563eb");
+        Button btnRegistrar = new Button("Registrar usuario");
+        EstilosUI.aplicarHover(btnRegistrar, EstilosUI.PRIMARIO, EstilosUI.PRIMARIO_DARK);
         btnRegistrar.setOnAction(e -> registrarUsuario());
 
         campos.getChildren().addAll(
@@ -90,7 +88,6 @@ public class UsuariosController {
             labeledField("Rol", comboRol),
             btnRegistrar
         );
-
         HBox.setMargin(btnRegistrar, new Insets(0, 0, 1, 8));
 
         card.getChildren().addAll(titulo, campos);
@@ -98,7 +95,7 @@ public class UsuariosController {
     }
 
     private VBox labeledField(String etiqueta, Control campo) {
-        VBox caja = new VBox(6);
+        VBox caja = new VBox(7);
         Label lbl = new Label(etiqueta);
         lbl.setStyle(EstilosUI.etiquetaForm());
         caja.getChildren().addAll(lbl, campo);
@@ -109,23 +106,23 @@ public class UsuariosController {
         TextField tf = new TextField();
         tf.setPromptText(placeholder);
         tf.setPrefWidth(ancho);
-        tf.setStyle(EstilosUI.campo());
+        EstilosUI.aplicarFocus(tf);
         return tf;
     }
 
     private Node construirTabla() {
-        VBox card = new VBox(16);
-        card.setPadding(new Insets(24));
-        card.setStyle(EstilosUI.TARJETA);
+        VBox card = new VBox(18);
+        card.setPadding(new Insets(26));
+        EstilosUI.aplicarHoverTarjeta(card);
 
-        Label titulo = new Label("Usuarios Registrados");
+        Label titulo = new Label("Usuarios registrados");
         titulo.setStyle(EstilosUI.tituloSeccion());
 
         tabla = new TableView<>(datos);
-        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabla.setPrefHeight(380);
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        tabla.setPrefHeight(420);
         tabla.setPlaceholder(new Label("No hay usuarios registrados."));
-        tabla.setStyle("-fx-background-color: transparent;");
+        EstilosUI.estilizarTabla(tabla);
 
         TableColumn<Usuario, String> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getId()));
@@ -133,10 +130,11 @@ public class UsuariosController {
 
         TableColumn<Usuario, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNombre()));
-        colNombre.setPrefWidth(240);
+        colNombre.setPrefWidth(260);
 
         TableColumn<Usuario, String> colRol = new TableColumn<>("Rol");
         colRol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getRol().name()));
+        colRol.setPrefWidth(150);
         colRol.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String rol, boolean empty) {
@@ -146,32 +144,26 @@ public class UsuariosController {
                     return;
                 }
                 Label badge = new Label(rol);
-                badge.setFont(Font.font("System", FontWeight.BOLD, 11));
-                badge.setTextFill(Color.WHITE);
+                badge.setFont(Font.font("Segoe UI", FontWeight.BOLD, 10.5));
                 String color = rol.equals("DOCENTE") ? EstilosUI.PRIMARIO : EstilosUI.EXITO;
-                badge.setStyle(
-                    "-fx-background-color: " + color + ";" +
-                    "-fx-background-radius: 20;" +
-                    "-fx-padding: 3 10 3 10;"
-                );
+                badge.setStyle(EstilosUI.badgeSuave(color));
                 setGraphic(badge);
             }
         });
 
         TableColumn<Usuario, Void> colAccion = new TableColumn<>("Acción");
-        colAccion.setPrefWidth(120);
+        colAccion.setPrefWidth(130);
         colAccion.setCellFactory(col -> new TableCell<>() {
             private final Button btnEliminar = new Button("Eliminar");
             {
-                btnEliminar.setStyle(EstilosUI.boton(EstilosUI.PELIGRO));
-                btnEliminar.setFont(Font.font("System", 12));
-                btnEliminar.setOnMouseEntered(e -> btnEliminar.setStyle(EstilosUI.boton("#dc2626")));
-                btnEliminar.setOnMouseExited (e -> btnEliminar.setStyle(EstilosUI.boton(EstilosUI.PELIGRO)));
+                btnEliminar.setFont(Font.font("Segoe UI", FontWeight.BOLD, 12));
+                EstilosUI.aplicarHoverOutline(btnEliminar, EstilosUI.PELIGRO, EstilosUI.PELIGRO_DARK);
                 btnEliminar.setOnAction(e -> {
                     Usuario u = getTableView().getItems().get(getIndex());
                     eliminarUsuario(u.getId());
                 });
             }
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -188,7 +180,7 @@ public class UsuariosController {
     }
 
     private void registrarUsuario() {
-        String id     = campoId.getText().trim();
+        String id = campoId.getText().trim();
         String nombre = campoNombre.getText().trim();
         String rolStr = comboRol.getValue();
 
@@ -212,7 +204,7 @@ public class UsuariosController {
         confirm.setTitle("Confirmar eliminación");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Deseas eliminar al usuario con ID: " + id + "?\nSi tiene historial, este se conserva; si está activo, la operación se bloquea.");
-        confirm.getDialogPane().setStyle("-fx-background-color: white; -fx-font-size: 13px;");
+        confirm.getDialogPane().setStyle("-fx-background-color: white; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';");
 
         confirm.showAndWait().ifPresent(resp -> {
             if (resp == ButtonType.OK) {

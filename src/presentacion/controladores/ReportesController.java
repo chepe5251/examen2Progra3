@@ -9,7 +9,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import logicaNegocio.AccesoService;
@@ -35,8 +34,8 @@ public class ReportesController {
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        VBox contenido = new VBox(24);
-        contenido.setPadding(new Insets(32));
+        VBox contenido = new VBox(28);
+        contenido.setPadding(new Insets(36));
         contenido.setStyle("-fx-background-color: " + EstilosUI.FONDO + ";");
 
         contenido.getChildren().addAll(
@@ -51,21 +50,21 @@ public class ReportesController {
     }
 
     private Node construirEncabezado() {
-        VBox caja = new VBox(4);
-        Label titulo    = new Label("📋  Reportes de Acceso");
+        VBox caja = new VBox(6);
+        Label titulo = new Label("Reportes de acceso");
         titulo.setStyle(EstilosUI.titulo());
-        Label subtitulo = new Label("Consulta el historial y el tiempo acumulado de cada usuario en el laboratorio");
+        Label subtitulo = new Label("Consulta historial por usuario y el tiempo acumulado dentro del laboratorio.");
         subtitulo.setStyle(EstilosUI.subtitulo());
         caja.getChildren().addAll(titulo, subtitulo);
         return caja;
     }
 
     private Node construirBusqueda() {
-        VBox card = new VBox(16);
-        card.setPadding(new Insets(24));
-        card.setStyle(EstilosUI.TARJETA);
+        VBox card = new VBox(18);
+        card.setPadding(new Insets(26));
+        EstilosUI.aplicarHoverTarjeta(card);
 
-        Label titulo = new Label("Buscar por Usuario");
+        Label titulo = new Label("Buscar por usuario");
         titulo.setStyle(EstilosUI.tituloSeccion());
 
         HBox fila = new HBox(12);
@@ -73,17 +72,16 @@ public class ReportesController {
 
         campoBusqueda = new TextField();
         campoBusqueda.setPromptText("Ingresa el ID del usuario  (Ej: U001)");
-        campoBusqueda.setPrefWidth(300);
-        campoBusqueda.setStyle(EstilosUI.campo());
+        campoBusqueda.setPrefWidth(320);
+        EstilosUI.aplicarFocus(campoBusqueda);
         campoBusqueda.setOnAction(e -> buscar());
 
-        Button btnBuscar = new Button("Buscar Historial");
-        btnBuscar.setStyle(EstilosUI.boton(EstilosUI.PRIMARIO));
-        EstilosUI.aplicarHover(btnBuscar, EstilosUI.PRIMARIO, "#2563eb");
+        Button btnBuscar = new Button("Buscar historial");
+        EstilosUI.aplicarHover(btnBuscar, EstilosUI.PRIMARIO, EstilosUI.PRIMARIO_DARK);
         btnBuscar.setOnAction(e -> buscar());
 
         Button btnLimpiar = new Button("Limpiar");
-        btnLimpiar.setStyle(EstilosUI.botonOutline(EstilosUI.TEXTO_SUAVE));
+        EstilosUI.aplicarHoverOutline(btnLimpiar, EstilosUI.TEXTO_SUAVE, EstilosUI.PRIMARIO_DARK);
         btnLimpiar.setOnAction(e -> limpiar());
 
         fila.getChildren().addAll(campoBusqueda, btnBuscar, btnLimpiar);
@@ -92,68 +90,73 @@ public class ReportesController {
     }
 
     private Node construirResumen() {
-        HBox fila = new HBox(16);
-
-        VBox card1 = new VBox(8);
-        card1.setPadding(new Insets(20));
-        card1.setStyle(EstilosUI.TARJETA);
-        Label etiq1 = new Label("Total de accesos encontrados");
-        etiq1.setStyle(EstilosUI.subtitulo());
-        labelTotalRegistros = new Label("—");
-        labelTotalRegistros.setFont(Font.font("System", FontWeight.BOLD, 30));
-        labelTotalRegistros.setTextFill(Color.web(EstilosUI.PRIMARIO));
-        card1.getChildren().addAll(etiq1, labelTotalRegistros);
-
-        VBox card2 = new VBox(8);
-        card2.setPadding(new Insets(20));
-        card2.setStyle(EstilosUI.TARJETA);
-        Label etiq2 = new Label("Tiempo total dentro del laboratorio");
-        etiq2.setStyle(EstilosUI.subtitulo());
-        labelTiempoTotal = new Label("—");
-        labelTiempoTotal.setFont(Font.font("System", FontWeight.BOLD, 30));
-        labelTiempoTotal.setTextFill(Color.web(EstilosUI.EXITO));
-        card2.getChildren().addAll(etiq2, labelTiempoTotal);
-
-        HBox.setHgrow(card1, Priority.ALWAYS);
-        HBox.setHgrow(card2, Priority.ALWAYS);
-
-        fila.getChildren().addAll(card1, card2);
+        HBox fila = new HBox(18);
+        fila.getChildren().addAll(
+            crearResumen("Registros encontrados", "Resultado de la búsqueda", true),
+            crearResumen("Tiempo acumulado", "Total con accesos cerrados", false)
+        );
         return fila;
     }
 
-    private Node construirTabla() {
-        VBox card = new VBox(16);
-        card.setPadding(new Insets(24));
-        card.setStyle(EstilosUI.TARJETA);
+    private Node crearResumen(String titulo, String detalle, boolean esTotal) {
+        VBox card = new VBox(8);
+        card.setPadding(new Insets(22));
+        EstilosUI.aplicarHoverTarjeta(card);
 
-        Label titulo = new Label("Historial de Accesos");
+        Label tituloLabel = new Label(titulo.toUpperCase());
+        tituloLabel.setStyle(EstilosUI.kpiEtiqueta());
+
+        Label detalleLabel = new Label(detalle);
+        detalleLabel.setStyle(EstilosUI.subtitulo());
+
+        Label valor = new Label("—");
+        valor.setFont(Font.font("Segoe UI", FontWeight.BOLD, 30));
+        valor.setTextFill(javafx.scene.paint.Color.web(esTotal ? EstilosUI.PRIMARIO : EstilosUI.EXITO));
+
+        if (esTotal) {
+            labelTotalRegistros = valor;
+        } else {
+            labelTiempoTotal = valor;
+        }
+
+        card.getChildren().addAll(tituloLabel, valor, detalleLabel);
+        HBox.setHgrow(card, Priority.ALWAYS);
+        return card;
+    }
+
+    private Node construirTabla() {
+        VBox card = new VBox(18);
+        card.setPadding(new Insets(26));
+        EstilosUI.aplicarHoverTarjeta(card);
+
+        Label titulo = new Label("Historial de accesos");
         titulo.setStyle(EstilosUI.tituloSeccion());
 
         tabla = new TableView<>(datos);
-        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabla.setPrefHeight(380);
-        tabla.setStyle("-fx-background-color: transparent;");
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        tabla.setPrefHeight(430);
         tabla.setPlaceholder(new Label("Busca un usuario para ver su historial de accesos."));
+        EstilosUI.estilizarTabla(tabla);
 
-        TableColumn<Acceso, String> colUsuario = new TableColumn<>("#  Usuario");
+        TableColumn<Acceso, String> colUsuario = new TableColumn<>("Usuario");
         colUsuario.setPrefWidth(110);
         colUsuario.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getIdUsuario()));
 
-        TableColumn<Acceso, String> colEntrada = new TableColumn<>("Fecha de Entrada");
+        TableColumn<Acceso, String> colEntrada = new TableColumn<>("Entrada");
         colEntrada.setPrefWidth(185);
         colEntrada.setCellValueFactory(d ->
             new SimpleStringProperty(d.getValue().getFechaHoraEntrada().format(FMT))
         );
 
-        TableColumn<Acceso, String> colSalida = new TableColumn<>("Fecha de Salida");
+        TableColumn<Acceso, String> colSalida = new TableColumn<>("Salida");
         colSalida.setPrefWidth(185);
         colSalida.setCellValueFactory(d -> {
             var salida = d.getValue().getFechaHoraSalida();
-            return new SimpleStringProperty(salida != null ? salida.format(FMT) : "—  Aún dentro");
+            return new SimpleStringProperty(salida != null ? salida.format(FMT) : "Aún dentro");
         });
 
         TableColumn<Acceso, String> colDuracion = new TableColumn<>("Duración");
-        colDuracion.setPrefWidth(130);
+        colDuracion.setPrefWidth(140);
         colDuracion.setCellValueFactory(d -> {
             Acceso a = d.getValue();
             if (a.getFechaHoraSalida() == null) {
@@ -177,14 +180,9 @@ public class ReportesController {
                     return;
                 }
                 Label badge = new Label(estado);
-                badge.setFont(Font.font("System", FontWeight.BOLD, 11));
-                badge.setTextFill(Color.WHITE);
+                badge.setFont(Font.font("Segoe UI", FontWeight.BOLD, 10.5));
                 String color = estado.equals("Activo") ? EstilosUI.EXITO : EstilosUI.TEXTO_SUAVE;
-                badge.setStyle(
-                    "-fx-background-color: " + color + ";" +
-                    "-fx-background-radius: 20;" +
-                    "-fx-padding: 3 10 3 10;"
-                );
+                badge.setStyle(EstilosUI.badgeSuave(color));
                 setGraphic(badge);
             }
         });
@@ -211,8 +209,8 @@ public class ReportesController {
             labelTotalRegistros.setText(String.valueOf(historial.size()));
 
             long minutos = service.calcularTiempoTotalEnMinutos(id);
-            long horas   = minutos / 60;
-            long mins    = minutos % 60;
+            long horas = minutos / 60;
+            long mins = minutos % 60;
             labelTiempoTotal.setText(horas + " h  " + mins + " min");
 
         } catch (Exception ex) {
