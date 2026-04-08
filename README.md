@@ -240,17 +240,17 @@ El proyecto sigue una arquitectura por capas.
 ### Diagrama visual
 
 ```mermaid
-%%{init: {'flowchart': {'curve': 'linear', 'nodeSpacing': 40, 'rankSpacing': 45}} }%%
+%%{init: {'flowchart': {'curve': 'linear', 'nodeSpacing': 55, 'rankSpacing': 60}} }%%
 flowchart TB
-    P["1. Presentacion<br/>MainApp / Main<br/>Controladores / EstilosUI"]
-    L["2. Logica de negocio<br/>UsuarioService / AccesoService"]
-    D["3. Acceso a datos<br/>UsuarioData / AccesoData / RutaDatos"]
-    E["4. Entidades<br/>Usuario / Acceso / Rol"]
+    P["1. Presentacion<br/>MainApp / Main<br/>Controladores<br/>EstilosUI"]
+    L["2. Logica de negocio<br/>UsuarioService<br/>AccesoService"]
+    D["3. Acceso a datos<br/>UsuarioData<br/>AccesoData<br/>RutaDatos"]
+    E["4. Entidades<br/>Usuario<br/>Acceso<br/>Rol"]
 
-    P -->|acciones del usuario| L
-    L -->|consultas y persistencia| D
-    L -.->|usa modelos| E
-    D -.->|serializa y recupera| E
+    P -->|acciones| L
+    L -->|persistencia| D
+    L -.->|modelos| E
+    D -.->|serializa| E
 
     classDef presentacion fill:#0f172a,color:#ffffff,stroke:#334155,stroke-width:2px;
     classDef logica fill:#2563eb,color:#ffffff,stroke:#1d4ed8,stroke-width:2px;
