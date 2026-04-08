@@ -240,37 +240,27 @@ El proyecto sigue una arquitectura por capas.
 ### Diagrama visual
 
 ```mermaid
+%%{init: {'flowchart': {'curve': 'linear', 'nodeSpacing': 40, 'rankSpacing': 45}} }%%
 flowchart TB
-    subgraph P["1. Presentacion"]
-        P1["MainApp / Main<br/>Controladores / EstilosUI"]
-    end
+    P["1. Presentacion<br/>MainApp / Main<br/>Controladores / EstilosUI"]
+    L["2. Logica de negocio<br/>UsuarioService / AccesoService"]
+    D["3. Acceso a datos<br/>UsuarioData / AccesoData / RutaDatos"]
+    E["4. Entidades<br/>Usuario / Acceso / Rol"]
 
-    subgraph L["2. Logica de negocio"]
-        L1["UsuarioService / AccesoService"]
-    end
+    P -->|acciones del usuario| L
+    L -->|consultas y persistencia| D
+    L -.->|usa modelos| E
+    D -.->|serializa y recupera| E
 
-    subgraph D["3. Acceso a datos"]
-        D1["UsuarioData / AccesoData / RutaDatos"]
-    end
-
-    subgraph E["4. Entidades"]
-        E1["Usuario / Acceso / Rol"]
-    end
-
-    P1 -->|"acciones del usuario"| L1
-    L1 -->|"consultas y persistencia"| D1
-    L1 -.->|"usa modelos"| E1
-    D1 -.->|"serializa y recupera"| E1
-
-    classDef presentacion fill:#0f172a,color:#ffffff,stroke:#1e293b,stroke-width:2px;
+    classDef presentacion fill:#0f172a,color:#ffffff,stroke:#334155,stroke-width:2px;
     classDef logica fill:#2563eb,color:#ffffff,stroke:#1d4ed8,stroke-width:2px;
     classDef datos fill:#f59e0b,color:#111827,stroke:#d97706,stroke-width:2px;
     classDef entidades fill:#10b981,color:#06281c,stroke:#059669,stroke-width:2px;
 
-    class P1 presentacion;
-    class L1 logica;
-    class D1 datos;
-    class E1 entidades;
+    class P presentacion;
+    class L logica;
+    class D datos;
+    class E entidades;
 ```
 
 Lectura rápida del diagrama:
