@@ -88,6 +88,7 @@ public class AccesosController {
                                      String descripcion, boolean esEntrada) {
         VBox card = new VBox(20);
         card.setPadding(new Insets(28));
+        card.setMinWidth(280);
         card.setStyle(EstilosUI.TARJETA);
 
         // Encabezado de la tarjeta
@@ -107,11 +108,14 @@ public class AccesosController {
         );
 
         VBox textos = new VBox(2);
+        HBox.setHgrow(textos, Priority.ALWAYS);
         Label tituloLabel = new Label(titulo);
         tituloLabel.setFont(Font.font("System", FontWeight.BOLD, 16));
         tituloLabel.setTextFill(Color.web(EstilosUI.TEXTO));
+        tituloLabel.setWrapText(true);
         Label descLabel = new Label(descripcion);
         descLabel.setStyle(EstilosUI.subtitulo());
+        descLabel.setWrapText(true);
         textos.getChildren().addAll(tituloLabel, descLabel);
 
         header.getChildren().addAll(iconoBg, textos);
