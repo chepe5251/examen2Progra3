@@ -4,8 +4,51 @@
 **Lenguaje:** Java  
 **Formato:** [Versionado Semántico](https://semver.org/lang/es/)
 
-Todos los cambios relevantes de cada versión del proyecto se documentan en este archivo,
-ordenados de la versión más reciente a la más antigua.
+Todos los cambios relevantes de cada versión se documentan aquí, ordenados de la más reciente a la más antigua.
+
+---
+
+## [v2.0] — 2026-04-07 — Interfaz gráfica con JavaFX
+
+### Descripción
+Se migró completamente la capa `Presentacion` de un menú de consola a una interfaz gráfica
+de escritorio desarrollada con JavaFX. Se mantiene intacta la arquitectura por capas: la
+interfaz solo se comunica con `LogicaNegocio`, sin acceso directo a `AccesoDatos`.
+
+### Añadido
+- `MainApp.java` — punto de entrada de la aplicación JavaFX, configura el `Stage` principal
+- `MainController.java` — ventana raíz con sidebar de navegación lateral y área de contenido dinámica
+- `DashboardController.java` — panel de inicio con tarjetas de métricas (usuarios registrados,
+  usuarios dentro del laboratorio, total de accesos) e información del sistema
+- `UsuariosController.java` — módulo de gestión de usuarios con formulario de registro y tabla
+  interactiva con badges de rol y botón de eliminación por fila
+- `AccesosController.java` — módulo de entrada/salida con tarjetas visuales independientes,
+  retroalimentación de estado en línea y notas de política de acceso
+- `ReportesController.java` — módulo de historial con búsqueda por usuario, tabla de accesos
+  con columna de duración calculada y tarjetas de resumen (total registros / tiempo total)
+- `EstilosUI.java` — utilidad centralizada de estilos: paleta de colores, métodos de estilo
+  para botones, campos, textos y alertas visuales estandarizadas
+
+### Modificado
+- `AccesoService.java` — se añadieron dos métodos para proveer métricas al dashboard:
+  - `listarTodosLosAccesos()` — retorna todos los registros de acceso
+  - `contarDentroDelLaboratorio()` — cuenta usuarios con entrada activa sin salida
+
+### Mantenido
+- `Main.java` (consola) se conserva como modo alternativo de ejecución sin JavaFX
+- Toda la arquitectura por capas permanece intacta
+- La persistencia en archivos `.txt` no fue modificada
+- Todas las validaciones de `LogicaNegocio` siguen siendo la única fuente de lógica
+
+### Paleta de colores de la interfaz
+| Color | Uso |
+|-------|-----|
+| `#0f2744` | Sidebar de navegación |
+| `#3b82f6` | Botón activo, acciones primarias |
+| `#10b981` | Éxito, entrada, badge "Activo" |
+| `#ef4444` | Error, eliminación |
+| `#f59e0b` | Advertencias, métrica de accesos |
+| `#f1f5f9` | Fondo general de la aplicación |
 
 ---
 
@@ -18,9 +61,9 @@ la legibilidad y el mantenimiento de la lógica de control de acceso.
 
 ### Corregido
 - Se extrajo la validación de doble entrada al método privado `validarSinEntradaActiva()`
-  en `AccesoService`, separando la regla de negocio de la orquestación del flujo principal.
+  en `AccesoService`, separando la regla de negocio de la orquestación del flujo principal
 - Se mejoró el mensaje de error para el caso de doble entrada, haciéndolo más
-  descriptivo e identificable en tiempo de ejecución.
+  descriptivo e identificable en tiempo de ejecución
 
 ### Validaciones activas en esta versión
 - Bloqueo de doble entrada sin salida previa registrada
@@ -33,12 +76,12 @@ la legibilidad y el mantenimiento de la lógica de control de acceso.
 
 ---
 
-## [v1.2] — 2026-04-07 — Lógica de negocio e interfaz de usuario
+## [v1.2] — 2026-04-07 — Lógica de negocio e interfaz de consola
 
 ### Descripción
-Se implementaron las capas `LogicaNegocio` y `Presentacion`, completando la arquitectura
-funcional del sistema. Toda la lógica de validación quedó centralizada en los servicios,
-y la interacción con el usuario se delegó exclusivamente a `Main.java`.
+Se implementaron las capas `LogicaNegocio` y `Presentacion` (consola), completando la
+arquitectura funcional del sistema. Toda la lógica de validación quedó centralizada en los
+servicios, y la interacción con el usuario se delegó exclusivamente a `Main.java`.
 
 ### Añadido
 - `UsuarioService` con métodos `registrar()`, `listar()`, `eliminar()` y `existeId()`
@@ -53,8 +96,7 @@ y la interacción con el usuario se delegó exclusivamente a `Main.java`.
 
 ### Restricciones aplicadas
 - La capa `Presentacion` no importa ni referencia ninguna clase de `AccesoDatos`
-- Todas las excepciones de negocio son capturadas en la capa de presentación
-  y mostradas como mensajes de error al usuario
+- Todas las excepciones de negocio son capturadas en la presentación y mostradas al usuario
 
 ---
 
@@ -75,17 +117,16 @@ no contienen lógica de negocio ni validaciones de dominio.
 
 ### Formato de archivos generados
 
-**`usuarios.txt`**
+**`usuarios.txt`** — formato por línea:
 ```
 ID,Nombre,Rol
 ```
 
-**`accesos.txt`**
+**`accesos.txt`** — formato por línea:
 ```
 idUsuario,fechaHoraEntrada,fechaHoraSalida
 ```
-> El valor `null` en `fechaHoraSalida` indica que el usuario aún se encuentra dentro
-> del laboratorio.
+> El valor `null` en `fechaHoraSalida` indica que el usuario aún se encuentra dentro del laboratorio.
 
 ---
 
@@ -106,11 +147,9 @@ son POJOs puros: no contienen lógica de negocio ni acceso a persistencia.
   y otro para registro completo
 
 ### Decisiones de diseño
-- `fechaHoraSalida` es de tipo `LocalDateTime` y se inicializa en `null` para
-  representar que el usuario aún no ha salido del laboratorio
+- `fechaHoraSalida` se inicializa en `null` para representar que el usuario aún no ha salido
 - El enum `Rol` evita el uso de cadenas arbitrarias para representar el tipo de usuario
-- `toString()` en `Usuario` produce el formato directo de serialización usado por
-  la capa `AccesoDatos`
+- `toString()` en `Usuario` produce el formato directo de serialización usado por `AccesoDatos`
 
 ---
 
@@ -118,6 +157,8 @@ son POJOs puros: no contienen lógica de negocio ni acceso a persistencia.
 
 | Hash | Versión | Descripción |
 |------|---------|-------------|
+| pendiente | v2.0 | feat: interfaz gráfica JavaFX |
+| `8611c5f` | docs | docs: agregar README, CHANGELOG y actualizar IA_USO |
 | `88018db` | v1.3 | fix: validación de doble entrada |
 | `31201d3` | v1.2 | feat: interfaz de usuario en consola |
 | `ac02a7f` | v1.2 | feat: lógica de negocio y validaciones |

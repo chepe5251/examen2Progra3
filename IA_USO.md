@@ -64,7 +64,7 @@
 
 ---
 
-### Prompt 5 — Capa Presentacion
+### Prompt 5 — Capa Presentacion (consola)
 
 > "Crea la capa Presentacion con un menú en consola en Java. Funciones: registrar usuario,
 > ver usuarios, registrar entrada, registrar salida, ver reportes. SOLO puede usar
@@ -127,6 +127,26 @@
 
 ---
 
+### Prompt 10 — Interfaz gráfica con JavaFX
+
+> "Quiero transformar mi proyecto Java en una aplicación de escritorio con interfaz gráfica
+> moderna usando JavaFX. Mantener arquitectura por capas. Dashboard principal, menú lateral
+> elegante, módulos de gestión de usuarios, accesos y reportes. Tablas, formularios,
+> alertas visuales. Colores: azul oscuro para navegación, verde para acciones correctas,
+> rojo para errores. Presentacion solo consume LogicaNegocio."
+
+**Resultado generado:**
+- `MainApp.java` — punto de entrada JavaFX con `Stage` configurado (1150×730)
+- `MainController.java` — ventana principal con sidebar azul oscuro (`#0f2744`) y área central dinámica
+- `DashboardController.java` — panel con 3 tarjetas de métricas, info del sistema y reglas de política
+- `UsuariosController.java` — formulario de registro en fila + `TableView` con badges de rol y botón eliminar
+- `AccesosController.java` — dos tarjetas paralelas (Entrada / Salida) con retroalimentación de estado inline
+- `ReportesController.java` — búsqueda por ID, tabla con duración calculada y tarjetas de resumen
+- `EstilosUI.java` — paleta centralizada, métodos de estilo, hover en botones y alertas estandarizadas
+- `AccesoService.java` modificado — se añadieron `listarTodosLosAccesos()` y `contarDentroDelLaboratorio()`
+
+---
+
 ## 2. Parte del Sistema Generada por Cada Prompt
 
 | Prompt | Área | Archivos generados o modificados |
@@ -140,8 +160,7 @@
 | 7 | Documentación | `README.md` (sección Diagrama de Arquitectura) |
 | 8 | Documentación | `CHANGELOG.md` |
 | 9 | Documentación | `README.md` (revisión y mejora general) |
-
----
+| 10 | `presentacion` (JavaFX) | `MainApp.java`, `MainController.java`, `DashboardController.java`, `UsuariosController.java`, `AccesosController.java`, `ReportesController.java`, `EstilosUI.java` |
 
 ---
 
@@ -149,34 +168,49 @@
 
 ### Capa Entidades
 
-- Se renombró `RegistroAcceso` a `Acceso` para simplificar el nombre de la clase y alinearlo
-  con la convención del dominio del problema.
-- Se eliminó el método `estaActivo()` de la clase `Acceso`, ya que constituía lógica
-  de negocio dentro de una clase de entidad, violando el principio de responsabilidad única.
+- Se renombró `RegistroAcceso` a `Acceso` para simplificar el nombre y alinearlo con el dominio.
+- Se eliminó el método `estaActivo()` de `Acceso.java`, ya que constituía lógica de negocio
+  dentro de una entidad, violando el principio de responsabilidad única.
 
 ### Capa AccesoDatos
 
-- Se verificó que el método `actualizarSalida()` en `AccesoData` solo modifique el primer
-  registro activo encontrado por usuario, evitando sobreescrituras no deseadas en
-  escenarios con historial extenso.
-- Se ajustó el formato de serialización de `LocalDateTime` para garantizar compatibilidad
-  con `LocalDateTime.parse()` al leer desde archivo (formato ISO-8601 nativo de Java).
+- Se verificó que `actualizarSalida()` en `AccesoData` solo modifique el primer registro activo
+  por usuario, evitando sobreescrituras en escenarios con historial extenso.
+- Se ajustó el formato de serialización de `LocalDateTime` para compatibilidad con
+  `LocalDateTime.parse()` al leer desde archivo (formato ISO-8601 nativo de Java).
 
 ### Capa LogicaNegocio
 
 - Se extrajo `validarUsuarioExiste()` como método privado reutilizable en `AccesoService`,
   evitando duplicación de la consulta a `UsuarioData` dentro de los métodos públicos.
 - Se confirmó que `calcularTiempoTotalEnMinutos()` excluya registros sin salida (`null`),
-  para no generar errores de cálculo con accesos aún activos.
+  para no generar errores de cálculo con accesos activos.
+- Se añadieron `listarTodosLosAccesos()` y `contarDentroDelLaboratorio()` para servir
+  métricas al Dashboard sin exponer `AccesoDatos` a la capa de presentación.
 
-### Capa Presentacion
+### Capa Presentacion — Consola
 
-- Se separó el submenú de reportes en un método propio `verReportes()` para evitar
-  que el `switch` principal creciera en complejidad.
-- Se añadió el método `leerRol()` como utilidad privada para centralizar la selección
-  del enum `Rol` y retornar `null` ante entrada inválida sin lanzar excepción.
-- Se eliminaron acentos en los mensajes de consola para asegurar compatibilidad de
-  codificación en terminales Windows sin configuración UTF-8 explícita.
+- Se separó el submenú de reportes en el método `verReportes()` para evitar que el `switch`
+  principal creciera en complejidad.
+- Se añadió `leerRol()` como utilidad privada para centralizar la selección del enum `Rol`.
+- Se eliminaron acentos en los mensajes de consola para compatibilidad en terminales Windows
+  sin configuración UTF-8 explícita.
+
+### Capa Presentacion — JavaFX
+
+- Se eliminó el import no utilizado `javafx.scene.shape.Circle` en `AccesosController.java`
+  detectado durante la revisión del código.
+- Se verificó que ningún controlador JavaFX importe ni use clases de `AccesoDatos` directamente.
+- Se validó que `EstilosUI.java` no contenga lógica de negocio, solo constantes y utilidades
+  de presentación.
+
+### Documentación
+
+- El README fue actualizado para reflejar el modo dual de ejecución (JavaFX y consola),
+  con instrucciones separadas para cada uno.
+- El CHANGELOG fue extendido con la versión `v2.0` documentando todos los archivos añadidos
+  y modificados durante la migración a JavaFX.
+- Se eliminaron el doble separador `---` duplicado que existía en `IA_USO.md`.
 
 ---
 
@@ -185,42 +219,46 @@
 ### 4.1 Generación de estructura repetitiva
 
 Las clases POJO (`Usuario`, `Acceso`) y las clases DAO (`UsuarioData`, `AccesoData`) siguen
-patrones altamente repetitivos: atributos privados, constructores, getters/setters y métodos
-de lectura/escritura en archivo. La IA permitió generar esta base estructural de forma
-consistente y sin errores de tipeo, liberando tiempo para enfocarse en las decisiones
-de diseño.
+patrones altamente repetitivos. La IA permitió generar esta base estructural de forma
+consistente y sin errores de tipeo, liberando tiempo para las decisiones de diseño.
 
 ### 4.2 Respeto de la arquitectura por capas
 
-Se instruyó a la IA con restricciones arquitectónicas explícitas en cada prompt
-(por ejemplo: *"Presentacion NO puede acceder directamente a AccesoDatos"*). Esto permitió
-validar en tiempo real que cada clase generada respetara las dependencias correctas entre
-capas, reduciendo el riesgo de acoplamientos incorrectos.
+Se instruyó a la IA con restricciones arquitectónicas explícitas en cada prompt. Esto permitió
+validar en tiempo real que cada clase generada respetara las dependencias correctas, reduciendo
+el riesgo de acoplamientos incorrectos. En la interfaz JavaFX, la restricción
+*"Presentacion NO puede acceder directamente a AccesoDatos"* fue aplicada en los 6 controladores.
 
-### 4.3 Coherencia entre capas
+### 4.3 Diseño de interfaz moderno con JavaFX puro
 
-Al proporcionar contexto acumulado en cada prompt (las clases de capas anteriores ya
-creadas), la IA generó código compatible sin necesidad de adaptar firmas de métodos
-ni tipos de retorno manualmente.
+Para la interfaz gráfica se optó por JavaFX sin FXML, usando estilos inline `-fx-`. La IA
+generó los patrones visuales (tarjetas, badges de color, sidebar, tablas con `CellFactory`)
+de forma coherente y consistente, aplicando la misma paleta de colores en todos los módulos.
 
-### 4.4 Limitaciones identificadas
+### 4.4 Coherencia entre capas
+
+Al proporcionar contexto acumulado en cada prompt, la IA generó código compatible con las
+firmas de métodos existentes sin necesidad de adaptar tipos de retorno manualmente.
+
+### 4.5 Limitaciones identificadas
 
 | Limitación | Solución aplicada |
 |------------|-------------------|
-| La IA incluyó lógica de negocio dentro de `Acceso.java` (`estaActivo()`) | Se eliminó manualmente |
-| Nombre de clase `RegistroAcceso` no alineado con el dominio | Se renombró a `Acceso` |
-| Acentos en strings pueden causar problemas en consolas Windows | Se eliminaron manualmente |
-| El README generado contenía dos diagramas Mermaid redundantes | Se consolidaron en uno dentro de la sección "Diagrama de Arquitectura" |
-| La tabla de capas usaba nombres en minúsculas inconsistentes con el código | Se corrigieron a `Entidades`, `AccesoDatos`, etc. |
-| La sección Notas del README contenía texto de plantilla sin contenido real | Se reemplazó por notas técnicas concretas |
+| `Acceso.java` incluía lógica de negocio (`estaActivo()`) | Se eliminó manualmente |
+| Nombre `RegistroAcceso` no alineado con el dominio | Se renombró a `Acceso` |
+| Acentos en strings de consola con problemas en Windows | Se eliminaron manualmente |
+| README con dos diagramas Mermaid redundantes | Se consolidaron en uno |
+| Tabla de capas con nombres en minúsculas inconsistentes | Se corrigieron a `Entidades`, etc. |
+| Sección Notas con texto de plantilla sin contenido real | Se reemplazó por notas técnicas |
+| Dashboard requería métodos inexistentes en `AccesoService` | Se añadieron los métodos necesarios |
 
-### 4.5 Conclusión
+### 4.6 Conclusión
 
 El uso de IA en este proyecto fue una herramienta de apoyo para la generación de código
-estructural y repetitivo. Las decisiones de diseño, la revisión de reglas de negocio,
-la validación de la arquitectura y los ajustes de compatibilidad fueron realizados
-por el desarrollador. La IA no reemplazó el criterio técnico, sino que aceleró la
-producción del código base.
+estructural, repetitivo y de diseño visual. Las decisiones de arquitectura, la revisión de
+reglas de negocio, la validación de separación de capas y todos los ajustes de calidad
+fueron realizados por el desarrollador. La IA no reemplazó el criterio técnico, sino que
+aceleró significativamente la producción del código base y la documentación del proyecto.
 
 ---
 

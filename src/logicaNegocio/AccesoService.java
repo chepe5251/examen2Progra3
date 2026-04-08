@@ -58,6 +58,16 @@ public class AccesoService {
                 .collect(Collectors.toList());
     }
 
+    public List<Acceso> listarTodosLosAccesos() throws IOException {
+        return accesoData.listar();
+    }
+
+    public long contarDentroDelLaboratorio() throws IOException {
+        return accesoData.listar().stream()
+                .filter(a -> a.getFechaHoraSalida() == null)
+                .count();
+    }
+
     public long calcularTiempoTotalEnMinutos(String idUsuario) throws IOException {
         List<Acceso> historial = historialPorUsuario(idUsuario);
 
